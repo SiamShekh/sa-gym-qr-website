@@ -294,8 +294,8 @@ body {
 
 .hero-logo {
     display: block;
-    width: 260px;
-    max-width: 80%;
+    width: 280px;
+    max-width: 85%;
     height: auto;
     margin: 0 auto;
     object-fit: contain;
@@ -410,7 +410,7 @@ body {
     }
 
     .hero-logo {
-        width: 300px;
+        width: 320px;
     }
 }
 
@@ -420,7 +420,7 @@ body {
     }
 
     .hero-logo {
-        width: 220px;
+        width: 240px;
     }
 
     .feature-text {
