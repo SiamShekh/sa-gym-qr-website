@@ -15,6 +15,9 @@
         <section class="video-section">
             <div class="video-wrapper" id="videoWrapper">
                 <div class="loading-stripe" id="loadingStripe"></div>
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner-ring"></div>
+                </div>
                 <video 
                     id="gymVideo"
                     playsinline
@@ -59,6 +62,7 @@
                 const restartBtn = document.getElementById('restartBtn');
                 const wrapper = document.getElementById('videoWrapper');
                 const loadingStripe = document.getElementById('loadingStripe');
+                const loadingSpinner = document.getElementById('loadingSpinner');
                 const scrollHint = document.getElementById('scrollHint');
                 const hlsUrl = 'assets/hls/playlist.m3u8';
                 let loadingTimeout;
@@ -66,10 +70,12 @@
                 function showLoading() {
                     clearTimeout(loadingTimeout);
                     loadingStripe.classList.add('is-loading');
+                    loadingSpinner.classList.add('is-loading');
                 }
 
                 function hideLoading() {
                     loadingStripe.classList.remove('is-loading');
+                    loadingSpinner.classList.remove('is-loading');
                 }
 
                 function attemptAutoplay() {
@@ -79,7 +85,10 @@
                     if (promise !== undefined) {
                         promise.catch(function () {
                             hideLoading();
-                        }).finally(updateButton);
+                        }).finally(function () {
+                            updateButton();
+                            if (!video.paused) hideLoading();
+                        });
                     }
                     updateButton();
                 }
@@ -90,6 +99,7 @@
                         e.stopPropagation();
                     }
                     if (video.paused || video.ended) {
+                        showLoading();
                         video.play().catch(() => {});
                     } else {
                         video.pause();
@@ -101,6 +111,7 @@
                         e.preventDefault();
                         e.stopPropagation();
                     }
+                    showLoading();
                     video.currentTime = 0;
                     video.play().catch(() => {});
                 }
@@ -162,9 +173,12 @@
                 video.addEventListener('waiting', showLoading);
                 video.addEventListener('seeking', showLoading);
                 video.addEventListener('playing', hideLoading);
-                video.addEventListener('canplay', hideLoading);
                 video.addEventListener('canplaythrough', hideLoading);
                 video.addEventListener('seeked', hideLoading);
+                video.addEventListener('pause', function () {
+                    hideLoading();
+                    updateButton();
+                });
                 video.addEventListener('stalled', function () {
                     loadingTimeout = setTimeout(showLoading, 200);
                 });
@@ -183,7 +197,6 @@
                 });
 
                 video.addEventListener('play', updateButton);
-                video.addEventListener('pause', updateButton);
                 video.addEventListener('ended', function () {
                     updateButton();
                     handleEnded();
