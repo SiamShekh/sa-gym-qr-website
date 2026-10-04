@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SA Gym - Transform Your Body</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="container">
+        <!-- Video Section -->
+        <section class="video-section">
+            <div class="video-wrapper" id="videoWrapper">
+                <video 
+                    id="gymVideo"
+                    playsinline
+                    preload="auto"
+                    loop
+                    disablePictureInPicture
+                    controlsList="nodownload nofullscreen noremoteplayback"
+                >
+                    আপনার ব্রাউজার ভিডিও প্লে করতে সক্ষম নয়।
+                </video>
+                <div class="video-overlay" id="videoOverlay">
+                    <div class="controls-bar">
+                        <button class="control-btn restart-btn" id="restartBtn" aria-label="Restart video">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                            </svg>
+                        </button>
+                        <button class="control-btn play-pause-btn" id="playPauseBtn" aria-label="Play video">
+                            <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                            <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+        <script>
+            (function () {
+                const video = document.getElementById('gymVideo');
+                const overlay = document.getElementById('videoOverlay');
+                const btn = document.getElementById('playPauseBtn');
+                const restartBtn = document.getElementById('restartBtn');
+                const wrapper = document.getElementById('videoWrapper');
+                const hlsUrl = 'assets/hls/playlist.m3u8';
+
+                function attemptAutoplay() {
+                    video.muted = false;
+                    const promise = video.play();
+                    if (promise !== undefined) {
+                        promise.catch(function () {
+                            // Autoplay blocked by browser; keep play button visible
+                        }).finally(updateButton);
+                    }
+                    updateButton();
+                }
+
+                function togglePlay(e) {
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    if (video.paused || video.ended) {
+                        video.play().catch(() => {});
+                    } else {
+                        video.pause();
+                    }
+                }
+
+                function restartVideo(e) {
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    video.currentTime = 0;
+                    video.play().catch(() => {});
+                }
+
+                function handleEnded() {
+                    video.currentTime = 0;
+                    video.play().catch(() => {});
+                }
+
+                function updateButton() {
+                    wrapper.classList.toggle('is-playing', !video.paused);
+                }
+
+                // Load HLS stream
+                if (Hls.isSupported()) {
+                    const hls = new Hls({
+                        maxBufferLength: 10,
+                        maxMaxBufferLength: 20,
+                        startLevel: -1,
+                        abrEwmaDefaultEstimate: 1000000,
+                        capLevelToPlayerSize: true,
+                        debug: false
+                    });
+                    hls.loadSource(hlsUrl);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, attemptAutoplay);
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = hlsUrl;
+                    video.addEventListener('loadedmetadata', attemptAutoplay, { once: true });
+                } else {
+                    video.src = 'assets/video-compressed.mp4';
+                    video.addEventListener('loadedmetadata', attemptAutoplay, { once: true });
+                }
+
+                // Instant input handling for mobile + desktop
+                function bindFastClick(element, handler) {
+                    function onStart(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handler(e);
+                    }
+                    if (window.PointerEvent) {
+                        element.addEventListener('pointerdown', onStart);
+                    } else {
+                        element.addEventListener('touchstart', onStart, { passive: false });
+                    }
+                    element.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                }
+
+                bindFastClick(overlay, togglePlay);
+                bindFastClick(btn, togglePlay);
+                bindFastClick(restartBtn, restartVideo);
+
+                // Disable right-click context menu on video area
+                overlay.addEventListener('contextmenu', function (e) {
+                    e.preventDefault();
+                    return false;
+                });
+
+                // Block common video shortcut keys
+                overlay.addEventListener('keydown', function (e) {
+                    if ([' ', 'ArrowRight', 'ArrowLeft', 'KeyF', 'KeyM'].includes(e.code)) {
+                        e.preventDefault();
+                    }
+                });
+
+                video.addEventListener('play', updateButton);
+                video.addEventListener('pause', updateButton);
+                video.addEventListener('ended', function () {
+                    updateButton();
+                    handleEnded();
+                });
+
+                // Disable native controls entirely
+                video.controls = false;
+                video.muted = false;
+
+                updateButton();
+            })();
+        </script>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <span class="tagline">Welcome to</span>
+                <h1 class="hero-title">SA GYM</h1>
+                <p class="hero-subtitle">
+                    আপনার ফিটনেস যাত্রা শুরু করুন আজ থেকেই। আধুনিক ইকুইপমেন্ট, অভিজ্ঞ ট্রেইনার এবং চমৎকার পরিবেশে গড়ে তুলুন স্বাস্থ্যকর জীবন।
+                </p>
+                <div class="hero-features">
+                    <div class="feature">
+                        <span class="feature-icon">💪</span>
+                        <span class="feature-text">Modern Equipment</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🏋️</span>
+                        <span class="feature-text">Expert Trainers</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⏰</span>
+                        <span class="feature-text">Flexible Timing</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a href="tel:+8800000000000" class="btn btn-primary">Call Now</a>
+                    <a href="https://maps.google.com" target="_blank" class="btn btn-secondary">Get Location</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 SA Gym. All rights reserved.</p>
+        </footer>
+    </main>
+</body>
+</html>
