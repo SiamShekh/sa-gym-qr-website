@@ -1,271 +1,368 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SA Gym - Transform Your Body</title>
-    <link rel="icon" type="image/png" href="assets/favicon.png">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet">
-</head>
-<body>
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <main class="container">
-        <!-- Video Section -->
-        <section class="video-section">
-            <div class="video-wrapper" id="videoWrapper">
-                <div class="loading-stripe" id="loadingStripe"></div>
-                <div class="loading-spinner" id="loadingSpinner">
-                    <div class="spinner-ring"></div>
-                </div>
-                <div class="video-poster" id="videoPoster" aria-hidden="true"></div>
-                <video 
-                    id="gymVideo"
-                    playsinline
-                    preload="auto"
-                    loop
-                    poster="assets/bijoy-bhai.webp"
-                    disablePictureInPicture
-                    controlsList="nodownload nofullscreen noremoteplayback"
-                >
-                    আপনার ব্রাউজার ভিডিও প্লে করতে সক্ষম নয়।
-                </video>
-                <div class="video-overlay" id="videoOverlay">
-                    <div class="controls-bar">
-                        <button class="control-btn restart-btn" id="restartBtn" aria-label="Restart video">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-                            </svg>
-                        </button>
-                        <button class="control-btn play-pause-btn" id="playPauseBtn" aria-label="Play video">
-                            <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M8 5v14l11-7z"/>
-                            </svg>
-                            <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="scroll-hint" id="scrollHint">
-                        <svg class="scroll-arrow" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
-                        </svg>
-                    </div>
-                </div>
+      <!-- Video Section -->
+      <section class="video-section">
+        <div class="video-wrapper" id="videoWrapper">
+          <div class="loading-stripe" id="loadingStripe"></div>
+          <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner-ring"></div>
+          </div>
+          <div class="video-poster" id="videoPoster" aria-hidden="true"></div>
+          <video
+            id="gymVideo"
+            playsinline
+            preload="auto"
+            loop
+            poster="assets/bijoy-bhai.webp"
+            disablePictureInPicture
+            controlsList="nodownload nofullscreen noremoteplayback"
+          >
+            আপনার ব্রাউজার ভিডিও প্লে করতে সক্ষম নয়।
+          </video>
+          <div class="video-overlay" id="videoOverlay">
+            <div class="controls-bar">
+              <button
+                class="control-btn restart-btn"
+                id="restartBtn"
+                aria-label="Restart video"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
+                  />
+                </svg>
+              </button>
+              <button
+                class="control-btn play-pause-btn"
+                id="playPauseBtn"
+                aria-label="Play video"
+              >
+                <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+              </button>
             </div>
-        </section>
-
-        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-        <script>
-            (function () {
-                const video = document.getElementById('gymVideo');
-                const overlay = document.getElementById('videoOverlay');
-                const btn = document.getElementById('playPauseBtn');
-                const restartBtn = document.getElementById('restartBtn');
-                const wrapper = document.getElementById('videoWrapper');
-                const loadingStripe = document.getElementById('loadingStripe');
-                const loadingSpinner = document.getElementById('loadingSpinner');
-                const scrollHint = document.getElementById('scrollHint');
-                const hlsUrl = 'assets/hls/playlist.m3u8';
-                let loadingTimeout;
-
-                function showLoading() {
-                    clearTimeout(loadingTimeout);
-                    loadingStripe.classList.add('is-loading');
-                    loadingSpinner.classList.add('is-loading');
-                }
-
-                function hideLoading() {
-                    loadingStripe.classList.remove('is-loading');
-                    loadingSpinner.classList.remove('is-loading');
-                }
-
-                function attemptAutoplay() {
-                    video.muted = false;
-                    showLoading();
-                    const promise = video.play();
-                    if (promise !== undefined) {
-                        promise.catch(function () {
-                            hideLoading();
-                        }).finally(function () {
-                            updateButton();
-                            if (!video.paused) hideLoading();
-                        });
-                    }
-                    updateButton();
-                }
-
-                function togglePlay(e) {
-                    if (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                    if (video.paused || video.ended) {
-                        showLoading();
-                        video.play().catch(() => {});
-                    } else {
-                        video.pause();
-                    }
-                }
-
-                function restartVideo(e) {
-                    if (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                    showLoading();
-                    video.currentTime = 0;
-                    video.play().catch(() => {});
-                }
-
-                function handleEnded() {
-                    video.currentTime = 0;
-                    video.play().catch(() => {});
-                }
-
-                function updateButton() {
-                    wrapper.classList.toggle('is-playing', !video.paused);
-                }
-
-                // Load HLS stream
-                showLoading();
-                if (Hls.isSupported()) {
-                    const hls = new Hls({
-                        maxBufferLength: 10,
-                        maxMaxBufferLength: 20,
-                        startLevel: -1,
-                        abrEwmaDefaultEstimate: 1000000,
-                        capLevelToPlayerSize: true,
-                        debug: false
-                    });
-                    hls.loadSource(hlsUrl);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, attemptAutoplay);
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = hlsUrl;
-                    video.addEventListener('loadedmetadata', attemptAutoplay, { once: true });
-                } else {
-                    video.src = 'assets/video-compressed.mp4';
-                    video.addEventListener('loadedmetadata', attemptAutoplay, { once: true });
-                }
-
-                // Instant input handling for mobile + desktop
-                function bindFastClick(element, handler) {
-                    function onStart(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handler(e);
-                    }
-                    if (window.PointerEvent) {
-                        element.addEventListener('pointerdown', onStart);
-                    } else {
-                        element.addEventListener('touchstart', onStart, { passive: false });
-                    }
-                    element.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    });
-                }
-
-                bindFastClick(btn, togglePlay);
-                bindFastClick(restartBtn, restartVideo);
-
-                // Loading indicator events
-                video.addEventListener('loadstart', showLoading);
-                video.addEventListener('waiting', showLoading);
-                video.addEventListener('seeking', showLoading);
-                video.addEventListener('playing', hideLoading);
-                video.addEventListener('canplaythrough', hideLoading);
-                video.addEventListener('seeked', hideLoading);
-                video.addEventListener('pause', function () {
-                    hideLoading();
-                    updateButton();
-                });
-                video.addEventListener('stalled', function () {
-                    loadingTimeout = setTimeout(showLoading, 200);
-                });
-
-                // Disable right-click context menu on video area
-                overlay.addEventListener('contextmenu', function (e) {
-                    e.preventDefault();
-                    return false;
-                });
-
-                // Block common video shortcut keys
-                overlay.addEventListener('keydown', function (e) {
-                    if ([' ', 'ArrowRight', 'ArrowLeft', 'KeyF', 'KeyM'].includes(e.code)) {
-                        e.preventDefault();
-                    }
-                });
-
-                video.addEventListener('play', updateButton);
-                video.addEventListener('ended', function () {
-                    updateButton();
-                    handleEnded();
-                });
-
-                // Scroll hint: shake player on load and hide hint on first scroll
-                function triggerScrollHint() {
-                    wrapper.classList.add('shake-hint');
-                    setTimeout(function () {
-                        wrapper.classList.remove('shake-hint');
-                    }, 1200);
-                }
-
-                function hideScrollHint() {
-                    scrollHint.classList.add('is-hidden');
-                    window.removeEventListener('scroll', hideScrollHint);
-                }
-
-                window.addEventListener('DOMContentLoaded', triggerScrollHint);
-                window.addEventListener('scroll', hideScrollHint, { passive: true });
-
-                // Disable native controls entirely
-                video.controls = false;
-                video.muted = false;
-
-                updateButton();
-            })();
-        </script>
-
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-content">
-                <span class="tagline">Welcome to</span>
-                <a href="assets/logo.svg" target="_blank" rel="noopener noreferrer" 
-                   oncontextmenu="event.preventDefault(); window.open('assets/logo.svg', '_blank'); return false;">
-                    <img class="hero-logo" src="assets/logo.svg" alt="S.A GYM" width="260" height="auto">
-                </a>
-                <p class="hero-subtitle">
-       
-                    আপনার ফিটনেস যাত্রা শুরু করুন আজ থেকেই। আধুনিক ইকুইপমেন্ট, অভিজ্ঞ ট্রেইনার এবং চমৎকার পরিবেশে গড়ে তুলুন স্বাস্থ্যকর জীবন।
-                </p>
-                <div class="hero-features">
-                    <div class="feature">
-                        <span class="feature-icon">💪</span>
-                        <span class="feature-text">Modern Equipment</span>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🏋️</span>
-                        <span class="feature-text">Expert Trainers</span>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">⏰</span>
-                        <span class="feature-text">Flexible Timing</span>
-                    </div>
-                </div>
-                <div class="hero-actions">
-                    <a href="tel:+8801746-933966" class="btn btn-primary">Call Now</a>
-                    <a href="https://maps.app.goo.gl/z9HwEwsP9NpBUABy8?g_st=ac" target="_blank" class="btn btn-secondary">Get Location</a>
-                </div>
+            <div class="scroll-hint" id="scrollHint">
+              <svg class="scroll-arrow" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+              </svg>
             </div>
-        </section>
+          </div>
+        </div>
+      </section>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2026 SA Gym. All rights reserved.</p>
-        </footer>
+      <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+      <script>
+        (function () {
+          const video = document.getElementById("gymVideo");
+          const overlay = document.getElementById("videoOverlay");
+          const btn = document.getElementById("playPauseBtn");
+          const restartBtn = document.getElementById("restartBtn");
+          const wrapper = document.getElementById("videoWrapper");
+          const loadingStripe = document.getElementById("loadingStripe");
+          const loadingSpinner = document.getElementById("loadingSpinner");
+          const scrollHint = document.getElementById("scrollHint");
+          const hlsUrl = "assets/hls/playlist.m3u8";
+          let loadingTimeout;
+
+          function showLoading() {
+            clearTimeout(loadingTimeout);
+            loadingStripe.classList.add("is-loading");
+            loadingSpinner.classList.add("is-loading");
+          }
+
+          function hideLoading() {
+            loadingStripe.classList.remove("is-loading");
+            loadingSpinner.classList.remove("is-loading");
+          }
+
+          function attemptAutoplay() {
+            video.muted = false;
+            showLoading();
+            const promise = video.play();
+            if (promise !== undefined) {
+              promise
+                .catch(function () {
+                  hideLoading();
+                })
+                .finally(function () {
+                  updateButton();
+                  if (!video.paused) hideLoading();
+                });
+            }
+            updateButton();
+          }
+
+          function togglePlay(e) {
+            if (e) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+            if (video.paused || video.ended) {
+              showLoading();
+              video.play().catch(() => {});
+            } else {
+              video.pause();
+            }
+          }
+
+          function restartVideo(e) {
+            if (e) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+            showLoading();
+            video.currentTime = 0;
+            video.play().catch(() => {});
+          }
+
+          function handleEnded() {
+            video.currentTime = 0;
+            video.play().catch(() => {});
+          }
+
+          function updateButton() {
+            wrapper.classList.toggle("is-playing", !video.paused);
+          }
+
+          // Load HLS stream
+          showLoading();
+          if (Hls.isSupported()) {
+            const hls = new Hls({
+              maxBufferLength: 10,
+              maxMaxBufferLength: 20,
+              startLevel: -1,
+              abrEwmaDefaultEstimate: 1000000,
+              capLevelToPlayerSize: true,
+              debug: false,
+            });
+            hls.loadSource(hlsUrl);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, attemptAutoplay);
+          } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+            video.src = hlsUrl;
+            video.addEventListener("loadedmetadata", attemptAutoplay, {
+              once: true,
+            });
+          } else {
+            video.src = "assets/video-compressed.mp4";
+            video.addEventListener("loadedmetadata", attemptAutoplay, {
+              once: true,
+            });
+          }
+
+          // Instant input handling for mobile + desktop
+          function bindFastClick(element, handler) {
+            function onStart(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              handler(e);
+            }
+            if (window.PointerEvent) {
+              element.addEventListener("pointerdown", onStart);
+            } else {
+              element.addEventListener("touchstart", onStart, {
+                passive: false,
+              });
+            }
+            element.addEventListener("click", function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+            });
+          }
+
+          bindFastClick(btn, togglePlay);
+          bindFastClick(restartBtn, restartVideo);
+
+          // Loading indicator events
+          video.addEventListener("loadstart", showLoading);
+          video.addEventListener("waiting", showLoading);
+          video.addEventListener("seeking", showLoading);
+          video.addEventListener("playing", hideLoading);
+          video.addEventListener("canplaythrough", hideLoading);
+          video.addEventListener("seeked", hideLoading);
+          video.addEventListener("pause", function () {
+            hideLoading();
+            updateButton();
+          });
+          video.addEventListener("stalled", function () {
+            loadingTimeout = setTimeout(showLoading, 200);
+          });
+
+          // Disable right-click context menu on video area
+          overlay.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
+            return false;
+          });
+
+          // Block common video shortcut keys
+          overlay.addEventListener("keydown", function (e) {
+            if (
+              [" ", "ArrowRight", "ArrowLeft", "KeyF", "KeyM"].includes(e.code)
+            ) {
+              e.preventDefault();
+            }
+          });
+
+          video.addEventListener("play", updateButton);
+          video.addEventListener("ended", function () {
+            updateButton();
+            handleEnded();
+          });
+
+          // Scroll hint: shake player on load and hide hint on first scroll
+          function triggerScrollHint() {
+            wrapper.classList.add("shake-hint");
+            setTimeout(function () {
+              wrapper.classList.remove("shake-hint");
+            }, 1200);
+          }
+
+          function hideScrollHint() {
+            scrollHint.classList.add("is-hidden");
+            window.removeEventListener("scroll", hideScrollHint);
+          }
+
+          window.addEventListener("DOMContentLoaded", triggerScrollHint);
+          window.addEventListener("scroll", hideScrollHint, { passive: true });
+
+          // Disable native controls entirely
+          video.controls = false;
+          video.muted = false;
+
+          updateButton();
+        })();
+      </script>
+
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-content">
+          <!-- <img class="hero-logo" draggable="false"  src="assets/logo.svg" alt="S.A GYM" width="260" height="auto"> -->
+          <svg width="250" height="100" viewBox="0 0 250 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_80_3)">
+            <g filter="url(#filter0_d_80_3)">
+            <path d="M123.93 2.3078L110.316 16.4722L65.815 16.8473C64.7714 16.8561 63.7506 17.1482 62.8616 17.6927L62.7404 17.7663C60.0119 19.4367 60.5565 23.5422 63.6264 24.4466C64.0206 24.5629 64.4288 24.6219 64.8393 24.6219H99.7276C102.105 24.6219 104.47 24.9742 106.744 25.6671C109.11 26.3886 111.45 27.3789 113.173 29.1498C115.829 31.8799 116.671 34.8637 116.035 39.1275C115.159 44.9991 112.573 50.7429 108.235 54.8063C104.912 57.9197 101.062 59.1595 94.9506 59.1595H33.879L47.1049 44.8011L94.94 44.242C96.212 44.2274 97.4472 43.8155 98.4732 43.0653L98.5581 43.0028C100.563 41.5363 100.46 38.5158 98.3596 37.1884C97.4032 36.5843 96.304 36.2635 95.1725 36.2635H62.6642C51.9002 36.2635 45.7779 33.295 44.4461 26.3501C43.2497 20.1062 45.1624 13.2606 49.3813 8.49729C52.1672 5.35171 56.4406 2.49593 62.6642 2.3078C75.9723 1.90584 123.93 2.3078 123.93 2.3078Z" fill="#FF0013"/>
+            </g>
+            <path d="M122.492 56.7889C125.287 54.55 126.021 50.8316 124.131 48.4838C122.241 46.1359 118.444 46.0476 115.649 48.2866C112.853 50.5255 112.119 54.2439 114.009 56.5917C115.899 58.9396 119.697 59.0279 122.492 56.7889Z" fill="#FF0013"/>
+            <g filter="url(#filter1_d_80_3)">
+            <path d="M162.635 43.6362L150.771 58.1885H212.815C212.815 58.1885 205.425 41.5019 198.034 24.4268C194.142 15.437 191.545 9.63486 188.85 4.95915C185.05 -1.63639 175.953 -1.43891 170.925 4.28084L123.542 58.1885H143.575L176.25 20.5462L186.753 43.6362H162.635Z" fill="#FF0013"/>
+            </g>
+            <path d="M18.5136 17.8289H26.2934C25.4781 23.8606 25.031 28.6643 24.9613 33.3511H44.3817L47.4938 36.8437H24.9794C25.0891 41.1975 25.5247 45.6886 26.2934 51.2021H18.5136C17.5595 38.1851 17.6244 30.8505 18.5136 17.8289Z" fill="#D4D2D1"/>
+            <path d="M17.1522 22.0974C16.4544 31.7246 16.4273 37.1067 17.1522 47.7095H10.7338C10.2151 37.7645 10.2657 32.2177 10.9043 22.4632C10.9176 22.2593 11.0876 22.0974 11.2924 22.0974H17.1522Z" fill="#D4D2D1"/>
+            <path d="M9.37243 26.7544C9.05179 33.1519 9.03235 36.9273 9.37243 44.0229V44.4114H4.12105C3.56516 37.6412 3.47433 33.8092 4.12105 26.7544H9.37243Z" fill="#D4D2D1"/>
+            <path d="M3.14851 39.3665C3.01732 36.0287 3.00655 34.2958 3.14851 31.7993L1.9353 32.404C-0.553029 33.6455 -0.666116 37.1463 1.737 38.545L3.14851 39.3665Z" fill="#D4D2D1"/>
+            <path d="M231.493 15.6975L223.714 15.6946C224.526 21.7269 224.971 26.5306 225.039 31.2174H205.425L206.786 34.3226L225.02 34.71C224.909 39.0638 224.471 43.5549 223.701 49.0684L231.48 49.0713C232.44 36.0543 232.377 28.7197 231.493 15.6975Z" fill="#D4D2D1"/>
+            <path d="M232.853 19.9666C233.547 29.5937 233.572 34.9764 232.843 45.5793L239.262 45.5816C239.784 35.636 239.735 30.0898 239.101 20.3346C239.088 20.1307 238.918 19.9689 238.713 19.9689L232.853 19.9666Z" fill="#D4D2D1"/>
+            <path d="M240.631 24.6265C240.949 31.0245 240.967 34.7993 240.624 41.8956V42.2835L245.876 42.2853C246.434 35.5156 246.527 31.6841 245.882 24.6288L240.631 24.6265Z" fill="#D4D2D1"/>
+            <path d="M246.85 37.241C246.983 33.9038 246.994 32.1709 246.853 29.6738L248.066 30.2797C250.554 31.5218 250.665 35.0226 248.262 36.4201L246.85 37.241Z" fill="#D4D2D1"/>
+            <path d="M145.324 26.7568H115.956L118.095 29.6687H142.991L145.324 26.7568Z" fill="#C1C1C1"/>
+            <path d="M91.6938 75.1118C91.6464 74.4837 91.5158 73.9328 91.302 73.4584C91.0883 72.9729 90.7855 72.5639 90.3931 72.232C90.0013 71.8885 89.5141 71.6332 88.9319 71.4673C88.3615 71.2897 87.6904 71.2009 86.9185 71.2009C85.2553 71.2009 83.7408 71.5982 82.3745 72.3921C81.0082 73.1861 79.8621 74.3295 78.9351 75.8228C78.0203 77.3161 77.3907 79.1174 77.0464 81.2271C76.6897 83.3602 76.6604 85.1853 76.9574 86.7026C77.2543 88.2193 77.8955 89.3808 78.8818 90.1871C79.8797 90.9927 81.2278 91.3959 82.9268 91.3959C84.4477 91.3959 85.7601 91.1762 86.8652 90.738C87.9697 90.2992 88.8546 89.677 89.5199 88.8713C90.1852 88.0657 90.601 87.1174 90.7673 86.0272L92.478 86.2049H84.1385L85.2787 79.1653H101.459L100.639 84.2137C100.093 87.5322 98.9171 90.3705 97.111 92.7291C95.3172 95.0754 93.0841 96.8772 90.4113 98.1334C87.7378 99.3778 84.8038 100 81.6079 100C78.0677 100 75.0804 99.2475 72.6447 97.7419C70.2096 96.2369 68.4691 94.0922 67.4237 91.3071C66.3901 88.522 66.188 85.2093 66.8182 81.3696C67.3171 78.359 68.2196 75.6925 69.5268 73.3696C70.845 71.0466 72.455 69.0853 74.3554 67.4856C76.2563 65.8737 78.3529 64.6591 80.6457 63.8411C82.9385 63.0115 85.3144 62.5967 87.7735 62.5967C89.924 62.5967 91.8783 62.9046 93.6364 63.521C95.3945 64.1256 96.8972 64.9909 98.1446 66.1168C99.3921 67.2309 100.324 68.5519 100.942 70.0809C101.572 71.6098 101.828 73.2866 101.709 75.1118H91.6938ZM105.54 63.0945H116.588L121.221 77.8852H121.577L131.129 63.0945H142.177L124.643 88.0534L122.718 99.5023H112.882L114.806 88.0534L105.54 63.0945ZM145.407 63.0945H157.738L162.799 83.716H163.226L175.13 63.0945H187.461L181.402 99.5023H171.709L175.201 78.4537H174.916L163.369 99.2177H157.524L152.891 78.3117H152.606L149.042 99.5023H139.348L145.407 63.0945Z" fill="#E1E1DF"/>
+            </g>
+            <defs>
+            <filter id="filter0_d_80_3" x="22.0657" y="-7.49648" width="118.928" height="85.9072" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+            <feOffset dx="2.62517" dy="4.81281"/>
+            <feGaussianBlur stdDeviation="7.21922"/>
+            <feComposite in2="hardAlpha" operator="out"/>
+            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.34 0"/>
+            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_80_3"/>
+            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_80_3" result="shape"/>
+            </filter>
+            <filter id="filter1_d_80_3" x="120.479" y="-6.56293" width="101.525" height="70.4393" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+            <feOffset dx="3.0627" dy="-0.437529"/>
+            <feGaussianBlur stdDeviation="3.0627"/>
+            <feComposite in2="hardAlpha" operator="out"/>
+            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.29 0"/>
+            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_80_3"/>
+            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_80_3" result="shape"/>
+            </filter>
+            <clipPath id="clip0_80_3">
+            <rect width="250" height="100" fill="white"/>
+            </clipPath>
+            </defs>
+            </svg>
+            
+
+          <p class="hero-subtitle">
+            আপনার ফিটনেস যাত্রা শুরু করুন আজ থেকেই। আধুনিক ইকুইপমেন্ট, অভিজ্ঞ
+            ট্রেইনার এবং চমৎকার পরিবেশে গড়ে তুলুন স্বাস্থ্যকর জীবন।
+          </p>
+          <div class="hero-features">
+            <div class="feature">
+              <span class="feature-icon">
+                <!-- Dumbbell SVG (white and red) -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <rect x="1" y="9" width="4" height="6" rx="1" fill="#FF0013"/>
+                  <rect x="19" y="9" width="4" height="6" rx="1" fill="#FF0013"/>
+                  <rect x="7" y="11" width="10" height="2" rx="1" fill="#fff"/>
+                  <rect x="5" y="10" width="2" height="4" rx="1" fill="#fff"/>
+                  <rect x="17" y="10" width="2" height="4" rx="1" fill="#fff"/>
+                </svg>
+              </span>
+              <span class="feature-text">Modern Equipment</span>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">
+                <!-- Trainer (person with barbell) SVG, white & red -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="7" r="2" fill="#fff" stroke="#FF0013" stroke-width="1"/>
+                  <rect x="6" y="11" width="12" height="2" rx="1" fill="#fff"/>
+                  <rect x="9.5" y="13" width="5" height="6" rx="1" fill="#FF0013"/>
+                  <rect x="2" y="10" width="2" height="4" rx="1" fill="#fff"/>
+                  <rect x="20" y="10" width="2" height="4" rx="1" fill="#fff"/>
+                </svg>
+              </span>
+              <span class="feature-text">Expert Trainers</span>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">
+                <!-- Clock SVG (white and red) -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="#FF0013" stroke-width="2" fill="#fff"/>
+                  <rect x="11" y="7" width="2" height="6" rx="1" fill="#FF0013"/>
+                  <rect x="12" y="12" width="5" height="2" rx="1" transform="rotate(45 12 12)" fill="#FF0013"/>
+                </svg>
+              </span>
+              <span class="feature-text">Flexible Timing</span>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <a href="tel:+8801746-933966" class="btn btn-primary">Call Now</a>
+            <a
+              href="https://maps.app.goo.gl/z9HwEwsP9NpBUABy8?g_st=ac"
+              target="_blank"
+              class="btn btn-secondary"
+              >Get Location</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>&copy; 2026 SA Gym. All rights reserved.</p>
+      </footer>
     </main>
-</body>
+  </body>
 </html>
