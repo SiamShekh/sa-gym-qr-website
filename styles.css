@@ -292,15 +292,13 @@ body {
     color: var(--primary);
 }
 
-.hero-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 72px;
-    line-height: 0.9;
-    letter-spacing: 4px;
-    background: linear-gradient(135deg, #fff 0%, #ff6b6b 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.hero-logo {
+    display: block;
+    width: 260px;
+    max-width: 80%;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
 }
 
 .hero-subtitle {
@@ -411,8 +409,8 @@ body {
         border-radius: 0;
     }
 
-    .hero-title {
-        font-size: 84px;
+    .hero-logo {
+        width: 300px;
     }
 }
 
@@ -421,8 +419,8 @@ body {
         padding: 32px 18px 40px;
     }
 
-    .hero-title {
-        font-size: 60px;
+    .hero-logo {
+        width: 220px;
     }
 
     .feature-text {
